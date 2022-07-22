@@ -1,7 +1,6 @@
-package dev.r2c;
+package dev.r2c.semgrep;
 
 import com.google.common.io.Resources;
-import com.zaxxer.nuprocess.NuProcessBuilder;
 import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver;
 import org.codehaus.plexus.logging.Logger;
 
@@ -9,12 +8,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Optional;
 
-public class Semgrep {
-    public enum SemgrepExtractor {
+public class SemgrepArchive {
+    private enum SemgrepExtractor {
         INSTANCE;
         private Optional<Path> extractedPath = Optional.empty();
 
@@ -39,15 +36,12 @@ public class Semgrep {
         }
     }
 
-    private Semgrep() {
+    public static Path extract() throws IOException {
+        return SemgrepExtractor.INSTANCE.extract();
     }
 
-    public static NuProcessBuilder processBuilder() throws IOException {
-        Path extractedPath = SemgrepExtractor.INSTANCE.extract();
-        return new NuProcessBuilder(Arrays.asList(Paths.get(extractedPath.toString(), "bin/python").toString(), "-c", "import semgrep.cli; semgrep.cli.cli()"));
+    private SemgrepArchive() {
     }
-
-
 
     private static class NoopLogger implements Logger {
         @Override
