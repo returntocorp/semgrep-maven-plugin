@@ -1,21 +1,55 @@
 package dev.r2c.semgrep.mojos;
 
+import com.google.common.base.Strings;
 import com.zaxxer.nuprocess.NuProcessBuilder;
 import dev.r2c.semgrep.Argumentable;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Mojo(name = "scan")
 public class ScanMojo extends AbstractSemgrepMojo {
+    @Parameter(defaultValue = "${semgrep.install.path}", readonly = true)
+    private String installPath;
 
     @Parameter(defaultValue = "${semgrep.url}", readonly = true)
     private String url = "https://semgrep.dev";
 
-    protected NuProcessBuilder buildSemgrepProcess() throws IOException {
+    @Parameter(defaultValue= "${semgrep.version}", readonly = true)
+    private String version;
+
+    @Parameter(defaultValue = "${semgrep.python.command}", required = true, readonly = true)
+    private String pythonCommand;
+
+    @Override
+    protected Path getSemgrepInstallPath() throws IOException {
+        if (Strings.isNullOrEmpty(installPath)) {
+            Path tempDir = Files.createTempDirectory("semgrep_" + version + "_");
+            tempDir.toFile().deleteOnExit();
+            installPath = tempDir.toString();
+        }
+        return Paths.get(installPath);
+    }
+
+    @Override
+    protected Optional<String> getSemgrepVersion() {
+        return Strings.isNullOrEmpty(version) ? Optional.empty() : Optional.of(version);
+    }
+
+    @Override
+    protected String getPythonCommand() {
+        return pythonCommand;
+    }
+
+    protected NuProcessBuilder buildSemgrepProcess() throws IOException, InterruptedException, MojoExecutionException {
         NuProcessBuilder pb = semgrepProcessBuilder("scan", ScanArgument.values());
         pb.environment().put("SEMGREP_URL", url);
         return pb;

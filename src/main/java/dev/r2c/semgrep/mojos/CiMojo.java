@@ -1,16 +1,23 @@
 package dev.r2c.semgrep.mojos;
 
+import com.google.common.base.Strings;
 import com.zaxxer.nuprocess.NuProcessBuilder;
 import dev.r2c.semgrep.Argumentable;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Mojo(name = "ci")
 public class CiMojo extends AbstractSemgrepMojo {
+    @Parameter(defaultValue = "${semgrep.install.path}", required=true, readonly = true)
+    private String installPath;
 
     @Parameter(defaultValue = "${semgrep.url}", readonly = true)
     private String url = "https://semgrep.dev";
@@ -18,9 +25,30 @@ public class CiMojo extends AbstractSemgrepMojo {
     @Parameter(defaultValue = "${semgrep.app.token}", required = true, readonly = true)
     private String appToken;
 
+    @Parameter(defaultValue= "${semgrep.version}", required = true, readonly = true)
+    private String version;
+
+    @Parameter(defaultValue = "${semgrep.python.command}", required = true, readonly = true)
+    private String pythonCommand;
+
     @Override
-    protected NuProcessBuilder buildSemgrepProcess() throws IOException {
-        NuProcessBuilder pb = semgrepProcessBuilder("ci", CiArgument.values()), Ci;
+    protected Path getSemgrepInstallPath() {
+        return Paths.get(installPath);
+    }
+
+    @Override
+    protected Optional<String> getSemgrepVersion() {
+        return Strings.isNullOrEmpty(version) ? Optional.empty() : Optional.of(version);
+    }
+
+    @Override
+    protected String getPythonCommand() {
+        return pythonCommand;
+    }
+
+    @Override
+    protected NuProcessBuilder buildSemgrepProcess() throws IOException, InterruptedException, MojoExecutionException {
+        NuProcessBuilder pb = semgrepProcessBuilder("ci", CiArgument.values());
         pb.environment().put("SEMGREP_URL", url);
         pb.environment().put("SEMGREP_APP_TOKEN", appToken);
         return pb;

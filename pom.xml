@@ -8,7 +8,8 @@
   <name>semgrep-maven-plugin Maven Mojo</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <semgrep.version>0.104.0</semgrep.version>
+    <semgrep.python.command>python3</semgrep.python.command>
+    <semgrep.install.path>${project.build.directory}/semgrep</semgrep.install.path>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.version>3.8.6</maven.version>
@@ -64,53 +65,5 @@
         </plugin>
       </plugins>
     </pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.0.0</version>
-        <executions>
-          <execution>
-            <id>download-semgrep</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>${project.basedir}/scripts/install-semgrep.sh</executable>
-              <arguments>
-                <argument>${semgrep.version}</argument>
-                <argument>${project.basedir}/target/generated-resources/semgrep.tar.gz</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.6</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.basedir}/target/generated-resources</directory>
-                  <includes>
-                    <include>semgrep.tar.gz</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
   </build>
 </project>
