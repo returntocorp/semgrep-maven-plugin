@@ -4,7 +4,7 @@
   <groupId>dev.r2c</groupId>
   <artifactId>semgrep-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>0.104.0-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <name>semgrep-maven-plugin Maven Mojo</name>
   <url>http://maven.apache.org</url>
   <properties>
