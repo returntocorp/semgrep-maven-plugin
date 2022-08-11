@@ -1,6 +1,5 @@
 package dev.r2c.semgrep.mojos;
 
-import com.google.common.base.Strings;
 import com.zaxxer.nuprocess.NuProcessBuilder;
 import dev.r2c.semgrep.Argumentable;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -38,7 +37,8 @@ public class CiMojo extends AbstractSemgrepMojo {
 
     @Override
     protected Optional<String> getSemgrepVersion() {
-        return Strings.isNullOrEmpty(version) ? Optional.empty() : Optional.of(version);
+
+        return (version == null || version.isEmpty()) ? Optional.empty() : Optional.of(version);
     }
 
     @Override

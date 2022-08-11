@@ -1,6 +1,5 @@
 package dev.r2c.semgrep.mojos;
 
-import com.google.common.base.Joiner;
 import com.zaxxer.nuprocess.NuProcessBuilder;
 import dev.r2c.semgrep.Argumentable;
 import org.apache.maven.plugin.AbstractMojo;
@@ -63,7 +62,7 @@ public abstract class AbstractSemgrepMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         try {
             NuProcessBuilder pb = buildSemgrepProcess();
-            getLog().info("Launching semgrep with arguments: " + Joiner.on(" ").join(pb.command().subList(1, pb.command().size())));
+            getLog().debug("Launching semgrep with arguments: " + pb.command().subList(1, pb.command().size()));
             int exitCode = pb.start().waitFor(0, TimeUnit.MINUTES);
             if (exitCode != 0) {
                 throw new MojoFailureException("Semgrep exited with code " + exitCode);
